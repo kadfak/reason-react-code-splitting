@@ -19,25 +19,25 @@ let make = () => {
   let page =
     switch (url.path) {
     | [] =>
-      React.createElementVariadic(
+      External.React.createElementVariadic(
         Lazy.loadPage("HomePage"),
         HomePage.makeProps(~text="Home", ()),
         [||],
       )
     | ["services"] =>
-      React.createElementVariadic(
+      External.React.createElementVariadic(
         Lazy.loadPage("ServicesPage"),
         ServicesPage.makeProps(),
         [||],
       )
     | ["contact"] =>
-      React.createElementVariadic(
+      External.React.createElementVariadic(
         Lazy.loadPage("ContactPage"),
         ContactPage.makeProps(),
         [||],
       )
     | _ =>
-      React.createElementVariadic(
+      External.React.createElementVariadic(
         Lazy.loadPage("NotFoundPage"),
         NotFoundPage.makeProps(),
         [||],
