@@ -251,8 +251,8 @@ let default = make;
 
 - [reason-loadable](https://github.com/kMeillet/reason-loadable):
   I previously used a solution similar to `reason-loadable`, but in my opinion
-  it's too complex. It probably suffers from the flaw described in `3. Custom React.createElementVariadic binding`. I decided to dig deeper to make the
-  implementation as simple as possible and this is the solution I came up with.
+  it's too complex. I decided to dig deeper to make the implementation as simple
+  as possible and this is the solution I came up with.
 
 That's about it. Have fun splitting modules!
 
