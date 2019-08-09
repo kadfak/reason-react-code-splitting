@@ -322,6 +322,11 @@ This causes a slight flicker, which IMO is not desirable. To prevent this
 anomaly, I've concluded that the introduced solution is better for lazy loading
 page components. For other use cases it's still a viable option.
 
+In fact, the first version of the demo project was implemented using
+`React.lazy`. If you're interested, check out the [react-lazy
+branch](https://github.com/kadfak/reason-react-code-splitting/tree/react-lazy)
+of the demo project.
+
 ## 6. Existing solutions
 
 - [reason-loadable](https://github.com/kMeillet/reason-loadable):
