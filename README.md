@@ -8,8 +8,6 @@ This project splits a React application by pages in ReasonML.
 
 Interactive demo: [reason-react-code-splitting.surge.sh](http://reason-react-code-splitting.surge.sh/)
 
-For more details, see the demo project on [GitHub](https://github.com/kadfak/reason-react-code-splitting).
-
 ## 1. Configuration
 
 _Only the bits that interest us are included._
@@ -327,7 +325,7 @@ In fact, the first version of the demo project was implemented using
 branch](https://github.com/kadfak/reason-react-code-splitting/tree/react-lazy)
 of the demo project.
 
-## 6. Existing solutions
+## 9. Existing solutions
 
 - [reason-loadable](https://github.com/kMeillet/reason-loadable):
   I previously used a solution similar to `reason-loadable`, but in my opinion,
