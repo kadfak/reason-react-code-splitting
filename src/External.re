@@ -1,7 +1,8 @@
+[@bs.val] external import: string => Js.Promise.t('a) = "import";
+
 module React = {
-  [@bs.splice] [@bs.module "react"]
-  external createElementVariadic:
-    (React.component(Js.t('props)), Js.t('props), array(React.element)) =>
-    React.element =
+  [@bs.module "react"]
+  external createElement:
+    (React.component(Js.t('props)), Js.t('props)) => React.element =
     "createElement";
 };
