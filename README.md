@@ -322,8 +322,7 @@ page components. For other use cases it's still a viable option.
 
 In fact, the first version of the demo project was implemented using
 `React.lazy`. If you're interested, check out the [react-lazy
-branch](https://github.com/kadfak/reason-react-code-splitting/tree/react-lazy)
-of the demo project.
+branch](https://github.com/kadfak/reason-react-code-splitting/tree/react-lazy).
 
 ## 9. Existing solutions
 
