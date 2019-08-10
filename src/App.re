@@ -1,10 +1,19 @@
 type action =
-  | SetPage(Page.active);
+  | SetPageElement(React.element);
 
-type state = {page: Page.active};
+type state = {pageElement: React.element};
 
-let setPage = (dispatch, page, element) =>
-  dispatch(SetPage(Some((page, element))));
+let loadPage = (dispatch, url: ReasonReactRouter.url) =>
+  Js.Promise.(
+    url.path
+    |> Page.fromPath
+    |> Page.load
+    |> then_(element => {
+         dispatch(SetPageElement(element));
+         resolve();
+       })
+    |> ignore
+  );
 
 [@react.component]
 let make = () => {
@@ -12,26 +21,19 @@ let make = () => {
     React.useReducer(
       (state, action) =>
         switch (action) {
-        | SetPage(page) => {page: page}
+        | SetPageElement(pageElement) => {pageElement: pageElement}
         },
-      {page: None},
+      {pageElement: React.null},
     );
 
-  let url = ReasonReactRouter.useUrl();
+  React.useEffect0(() => {
+    open ReasonReactRouter;
 
-  let page = url.path->Page.fromPath;
+    dangerouslyGetInitialUrl() |> loadPage(dispatch);
+    let watcherId = watchUrl(url => loadPage(dispatch, url));
 
-  let pageElement =
-    switch (page, state.page) {
-    | (page, Some((activePage, element))) =>
-      if (page != activePage) {
-        Page.load(setPage(dispatch), page);
-      };
-      element;
-    | (_, None) =>
-      Page.load(setPage(dispatch), page);
-      React.null;
-    };
+    Some(() => unwatchUrl(watcherId));
+  });
 
   <div className="container">
     <div className="menu">
@@ -45,6 +47,6 @@ let make = () => {
         "Contact"->React.string
       </div>
     </div>
-    <div className="page"> pageElement </div>
+    <div className="page"> {state.pageElement} </div>
   </div>;
 };

@@ -4,8 +4,6 @@ type t =
   | Contact
   | NotFound;
 
-type active = option((t, React.element));
-
 let fromPath = path =>
   switch (path) {
   | [] => Home
@@ -14,55 +12,48 @@ let fromPath = path =>
   | _ => NotFound
   };
 
-let load = (setPage, page) =>
+let load = page =>
   Js.Promise.(
-    (
-      switch (page) {
-      | Home =>
-        External.import("./HomePage.bs.js")
-        |> then_(component =>
-             resolve(
-               External.React.createElement(
-                 component##make,
-                 HomePage.makeProps(~text="Home", ()),
-               ),
-             )
+    switch (page) {
+    | Home =>
+      External.import("./HomePage.bs.js")
+      |> then_(component =>
+           resolve(
+             External.React.createElement(
+               component##make,
+               HomePage.makeProps(~text="Home", ()),
+             ),
            )
-      | Services =>
-        External.import("./ServicesPage.bs.js")
-        |> then_(component =>
-             resolve(
-               External.React.createElement(
-                 component##make,
-                 ServicesPage.makeProps(),
-               ),
-             )
+         )
+    | Services =>
+      External.import("./ServicesPage.bs.js")
+      |> then_(component =>
+           resolve(
+             External.React.createElement(
+               component##make,
+               ServicesPage.makeProps(),
+             ),
            )
-      | Contact =>
-        External.import("./ContactPage.bs.js")
-        |> then_(component =>
-             resolve(
-               External.React.createElement(
-                 component##make,
-                 ContactPage.makeProps(),
-               ),
-             )
+         )
+    | Contact =>
+      External.import("./ContactPage.bs.js")
+      |> then_(component =>
+           resolve(
+             External.React.createElement(
+               component##make,
+               ContactPage.makeProps(),
+             ),
            )
-      | NotFound =>
-        External.import("./NotFoundPage.bs.js")
-        |> then_(component =>
-             resolve(
-               External.React.createElement(
-                 component##make,
-                 NotFoundPage.makeProps(),
-               ),
-             )
+         )
+    | NotFound =>
+      External.import("./NotFoundPage.bs.js")
+      |> then_(component =>
+           resolve(
+             External.React.createElement(
+               component##make,
+               NotFoundPage.makeProps(),
+             ),
            )
-      }
-    )
-    |> then_(element => {
-         setPage(page, element);
-         resolve();
-       })
-    |> ignore
+         )
+    }
   );

@@ -188,8 +188,6 @@ type t =
   | Contact
   | NotFound;
 
-type active = option((t, React.element));
-
 let fromPath = path =>
   switch (path) {
   | [] => Home
@@ -198,57 +196,50 @@ let fromPath = path =>
   | _ => NotFound
   };
 
-let load = (setPage, page) =>
+let load = page =>
   Js.Promise.(
-    (
-      switch (page) {
-      | Home =>
-        External.import("./HomePage.bs.js")
-        |> then_(component =>
-             resolve(
-               External.React.createElement(
-                 component##make,
-                 HomePage.makeProps(~text="Home", ()),
-               ),
-             )
+    switch (page) {
+    | Home =>
+      External.import("./HomePage.bs.js")
+      |> then_(component =>
+           resolve(
+             External.React.createElement(
+               component##make,
+               HomePage.makeProps(~text="Home", ()),
+             ),
            )
-      | Services =>
-        External.import("./ServicesPage.bs.js")
-        |> then_(component =>
-             resolve(
-               External.React.createElement(
-                 component##make,
-                 ServicesPage.makeProps(),
-               ),
-             )
+         )
+    | Services =>
+      External.import("./ServicesPage.bs.js")
+      |> then_(component =>
+           resolve(
+             External.React.createElement(
+               component##make,
+               ServicesPage.makeProps(),
+             ),
            )
-      | Contact =>
-        External.import("./ContactPage.bs.js")
-        |> then_(component =>
-             resolve(
-               External.React.createElement(
-                 component##make,
-                 ContactPage.makeProps(),
-               ),
-             )
+         )
+    | Contact =>
+      External.import("./ContactPage.bs.js")
+      |> then_(component =>
+           resolve(
+             External.React.createElement(
+               component##make,
+               ContactPage.makeProps(),
+             ),
            )
-      | NotFound =>
-        External.import("./NotFoundPage.bs.js")
-        |> then_(component =>
-             resolve(
-               External.React.createElement(
-                 component##make,
-                 NotFoundPage.makeProps(),
-               ),
-             )
+         )
+    | NotFound =>
+      External.import("./NotFoundPage.bs.js")
+      |> then_(component =>
+           resolve(
+             External.React.createElement(
+               component##make,
+               NotFoundPage.makeProps(),
+             ),
            )
-      }
-    )
-    |> then_(element => {
-         setPage(page, element);
-         resolve();
-       })
-    |> ignore
+         )
+    }
   );
 ```
 
@@ -258,13 +249,24 @@ Whenever a page changes, the `App` component will replace the active page
 element with the new one.
 
 ```reasonml
+/* App.re */
+
 type action =
-  | SetPage(Page.active);
+  | SetPageElement(React.element);
 
-type state = {page: Page.active};
+type state = {pageElement: React.element};
 
-let setPage = (dispatch, page, element) =>
-  dispatch(SetPage(Some((page, element))));
+let loadPage = (dispatch, url: ReasonReactRouter.url) =>
+  Js.Promise.(
+    url.path
+    |> Page.fromPath
+    |> Page.load
+    |> then_(element => {
+         dispatch(SetPageElement(element));
+         resolve();
+       })
+    |> ignore
+  );
 
 [@react.component]
 let make = () => {
@@ -272,26 +274,19 @@ let make = () => {
     React.useReducer(
       (state, action) =>
         switch (action) {
-        | SetPage(page) => {page: page}
+        | SetPageElement(pageElement) => {pageElement: pageElement}
         },
-      {page: None},
+      {pageElement: React.null},
     );
 
-  let url = ReasonReactRouter.useUrl();
+  React.useEffect0(() => {
+    open ReasonReactRouter;
 
-  let page = url.path->Page.fromPath;
+    dangerouslyGetInitialUrl() |> loadPage(dispatch);
+    let watcherId = watchUrl(url => loadPage(dispatch, url));
 
-  let pageElement =
-    switch (page, state.page) {
-    | (page, Some((activePage, element))) =>
-      if (page != activePage) {
-        Page.load(setPage(dispatch), page);
-      };
-      element;
-    | (_, None) =>
-      Page.load(setPage(dispatch), page);
-      React.null;
-    };
+    Some(() => unwatchUrl(watcherId));
+  });
 
   <div className="container">
     <div className="menu">
@@ -305,10 +300,9 @@ let make = () => {
         "Contact"->React.string
       </div>
     </div>
-    <div className="page"> pageElement </div>
+    <div className="page"> {state.pageElement} </div>
   </div>;
 };
-
 ```
 
 ## 8. Why not use [`React.lazy`](https://reactjs.org/docs/code-splitting.html#reactlazy)?
